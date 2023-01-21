@@ -1,24 +1,30 @@
-import logo from './logo.svg';
+import { clusterApiUrl } from '@solana/web3.js';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import {
+  SolletWalletAdapter,
+} from '@solana/wallet-adapter-wallets';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { useMemo } from 'react';
 import './App.css';
+import { BettingApp } from './BettingApp';
 
 function App() {
+  const solNetwork = WalletAdapterNetwork.Mainnet;
+  const endpoint = useMemo(() => clusterApiUrl(solNetwork), [solNetwork]);
+  // initialise all the wallets you want to use
+  const wallets = useMemo(
+      () => [
+          new SolletWalletAdapter(),
+      ],
+      [solNetwork]
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets}>
+        <BettingApp />
+      </WalletProvider>
+    </ConnectionProvider>
   );
 }
 
