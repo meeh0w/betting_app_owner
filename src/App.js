@@ -1,12 +1,13 @@
 import { clusterApiUrl } from '@solana/web3.js';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
-  SolletWalletAdapter,
+  PhantomWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { useMemo } from 'react';
 import './App.css';
 import { BettingApp } from './BettingApp';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 
 function App() {
   const solNetwork = WalletAdapterNetwork.Mainnet;
@@ -14,7 +15,7 @@ function App() {
   // initialise all the wallets you want to use
   const wallets = useMemo(
       () => [
-          new SolletWalletAdapter(),
+          new PhantomWalletAdapter(),
       ],
       [solNetwork]
   );
@@ -22,7 +23,9 @@ function App() {
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets}>
-        <BettingApp />
+        <WalletModalProvider>
+          <BettingApp />
+        </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );

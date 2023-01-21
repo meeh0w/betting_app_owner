@@ -3,6 +3,7 @@ import { Program, AnchorProvider, web3 } from "@project-serum/anchor";
 import { BettingApp, IDL } from "./betting_app";
 import { PublicKey } from "@solana/web3.js";
 import { useAnchorWallet, AnchorWallet } from "@solana/wallet-adapter-react";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 export const useClient = () => {
 
@@ -13,7 +14,8 @@ export const useClient = () => {
 
   function getProgram() {
     if(!wallet) {
-      throw "cant get wallet";
+      console.warn('connect your wallet first!');
+      return null;//throw "cant get wallet";
     }
 
     const network = "https://api.devnet.solana.com";
@@ -92,7 +94,7 @@ export const useClient = () => {
         owner: owner.publicKey,
         contract: contract.publicKey,
       })
-      .signers(owner instanceof wallet ? [] : [owner])
+      .signers(owner instanceof PhantomWalletAdapter ? [] : [owner])
       .rpc();
   }
   
@@ -122,5 +124,14 @@ export const useClient = () => {
     const airdropSignature = await program.provider.connection.requestAirdrop(owner.publicKey, anchor.web3.LAMPORTS_PER_SOL * amount);
     await program.provider.connection.confirmTransaction(airdropSignature);
   };
+
+  return {
+    program,
+    getState,
+    owner,
+    contract,
+    wallet,
+    addScheduledGame,
+  }
 
 }
